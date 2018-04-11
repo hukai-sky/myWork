@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3d旋转图</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul, li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .wrap {
+            width: 1200px;
+            margin: 10px auto;
+        }
+
+        .slide {
+            height: 600px;
+            position: relative;
+        }
+
+        .slide li {
+            position: absolute;
+            left: 200px;
+            top: 0;
+        }
+
+        .slide li img {
+            width: 100%;
+        }
+
+        .arrow {
+            opacity: 0;
+        }
+
+        .prev, .next {
+            width: 76px;
+            height: 112px;
+            position: absolute;
+            top: 50%;
+            margin-top: -56px;
+            background: url(prev.png) no-repeat;
+            z-index: 99;
+        }
+
+        .next {
+            right: 0;
+            background-image: url(next.png);
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+    <div class="slide" id="slide">
+        <ul>
+            <li><img src="1.jpg" alt=""></li>
+            <li><img src="2.jpg" alt=""></li>
+            <li><img src="3.jpg" alt=""></li>
+            <li><img src="4.jpg" alt=""></li>
+            <li><img src="5.jpg" alt=""></li>
+        </ul>
+        <!--左右切换按钮-->
+        <div class="arrow" id="arrow">
+            <a href="javascript:;" class="prev"></a>
+            <a href="javascript:;" class="next"></a>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = function () {
+//需求：点击足有按钮实现旋转木马。
+//原理：点击右侧按钮，让3号盒子的样式赋值给2号盒子，然后2->1,1->5,5->4,4->3。。。
+//左侧同理。
+//步骤：
+//1.鼠标放到轮播图上，两侧的按钮显示，移开隐藏。
+//2.让页面加载出所有的盒子的样式。
+//3.把两侧按钮绑定事件。(调用同一个方法，只有一个参数，true为正向旋转，false为反向旋转)
+//4.书写函数。
+// (操作数组。正向旋转：删除数组中第一个样式，添加到数组中的最后一位)
+// (操作数组。反向旋转：删除数组中最后一个样式，添加到数组中的第一位)
+
+
+        var arr = [
+            {   //  1
+                width: 400,
+                top: 70,
+                left: 50,
+                opacity: 20,
+                z: 2
+            },
+            {  // 2
+                width: 600,
+                top: 120,
+                left: 0,
+                opacity: 80,
+                z: 3
+            },
+            {   // 3
+                width: 800,
+                top: 100,
+                left: 200,
+                opacity: 100,
+                z: 4
+            },
+            {  // 4
+                width: 600,
+                top: 120,
+                left: 600,
+                opacity: 80,
+                z: 3
+            },
+            {   //5
+                width: 400,
+                top: 70,
+                left: 750,
+                opacity: 20,
+                z: 2
+            }
+        ];
+        var slide = document.getElementById("slide");
+        var liArr = slide.getElementsByTagName("li");
+        var arrow = document.getElementById("arrow");
+        var arrowChildren = arrow.children;
+        var flag = true;
+//1.鼠标放到轮播图上，两侧的按钮显示，移开隐藏。
+        slide.onmouseenter = function () {
+            animate(arrow, {"opacity": 100});
+        };
+        slide.onmouseleave = function () {
+            animate(arrow, {"opacity": 0});
+        };
+
+        move();
+//3.把两侧按钮绑定事件。(调用同一个方法，只有一个参数，true为正向旋转，false为反向旋转)
+        arrowChildren[0].onclick = function () {
+            if (flag) {
+                flag = false;
+                move(true);
+            }
+        };
+        arrowChildren[1].onclick = function () {
+            if (flag) {
+                flag = false;
+                move(false);
+            }
+        };
+
+//4.书写函数。
+
+        function move(bool) {
+            // (操作数组。反向旋转：删除数组中最后一个元素，添加到数组中的第一位)
+            if (bool !== undefined) {
+                if (bool) {
+                    arr.push(arr.shift());
+                } else {
+                    arr.unshift(arr.pop());
+                }
+            }
+            for (var i = 0; i < liArr.length; i++) {
+                animate(liArr[i], {
+                    "width": arr[i].width,
+                    "top": arr[i].top,
+                    "left": arr[i].left,
+                    "opacity": arr[i].opacity,
+                    "zIndex": arr[i].z
+                }, function () {
+                    //回调函数，所有程序加载完之后再初始化flag = true
+                    flag = true;
+                });
+            }
+
+        }
+    };
+
+
+    function getStyle(ele, attr) {
+        if (window.getComputedStyle) {
+            return window.getComputedStyle(ele, null)[attr];
+        }
+        return ele.currentStyle[attr];
+    }
+
+    function animate(ele, json, fn) {
+        //先清定时器
+        clearInterval(ele.timer);
+        ele.timer = setInterval(function () {
+            //开闭原则
+            var bool = true;
+            for (var k in json) {
+                //四步
+                var leader;
+                //判断如果属性为opacity的时候特殊获取值
+                if (k === "opacity") {
+                    leader = getStyle(ele, k) * 100 || 1;
+                } else {
+                    leader = parseInt(getStyle(ele, k)) || 0;
+                }
+
+                //1.获取步长
+                var step = (json[k] - leader) / 10;
+                //2.二次加工步长
+                step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                leader = leader + step;
+                //3.赋值
+                //特殊情况特殊赋值
+                if (k === "opacity") {
+                    ele.style[k] = leader / 100;
+                    //兼容IE678
+                    ele.style.filter = "alpha(opacity=" + leader + ")";
+                    //如果是层级，一次行赋值成功，不需要缓动赋值
+                } else if (k === "zIndex") {
+                    ele.style.zIndex = json[k];
+                } else {
+                    ele.style[k] = leader + "px";
+                }
+
+                if (json[k] !== leader) {
+                    bool = false;
+                }
+            }
+            //只有所有的属性都到了指定位置，bool值才不会变成false；
+            if (bool) {
+                clearInterval(ele.timer);
+                //所有程序执行完毕了，现在可以执行回调函数了
+                //只有传递了回调函数，才能执行
+                if (fn) {
+                    fn();
+                }
+            }
+        }, 25);
+    }
+
+
+</script>
+</body>
+</html>
