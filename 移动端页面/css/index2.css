@@ -16,6 +16,7 @@
   float: right;
 }
 .wrap .items .coupon {
+  position: relative;
   height: 9.90625rem;
   box-shadow: 0 2px 8px #e1dedb;
 }
@@ -72,6 +73,21 @@
   color: #fff;
   font-style: normal;
 }
+.wrap .items .coupon .coupon-circular {
+  height: 0.5625rem;
+  width: 100%;
+  top: 7.1rem;
+  position: absolute;
+}
+.wrap .items .coupon .coupon-circular i {
+  float: left;
+  width: 2.4%;
+  height: 100%;
+  box-shadow: 0 0.03125rem 0.03125rem #CCC inset;
+  border-radius: 50%;
+  background-color: #fff;
+  margin-left: 1.7%;
+}
 .wrap .items .coupon .coupon-action {
   height: 2.53125rem;
   display: flex;
@@ -93,6 +109,7 @@
   color: #aaaaaa;
 }
 .wrap .items .coupon-next {
+  position: relative;
   height: 9.90625rem;
   box-shadow: 0 2px 8px #e1dedb;
   margin-bottom: 0.8125rem;
@@ -149,6 +166,21 @@
   text-align: center;
   color: #fff;
   font-style: normal;
+}
+.wrap .items .coupon-next .coupon-circular {
+  height: 0.5625rem;
+  width: 100%;
+  top: 7.1rem;
+  position: absolute;
+}
+.wrap .items .coupon-next .coupon-circular i {
+  float: left;
+  width: 2.4%;
+  height: 100%;
+  box-shadow: 0 0.03125rem 0.03125rem #CCC inset;
+  border-radius: 50%;
+  background-color: #fff;
+  margin-left: 1.7%;
 }
 .wrap .items .coupon-next .coupon-action {
   height: 2.53125rem;
